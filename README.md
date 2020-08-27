@@ -1,5 +1,5 @@
-# Mudfam Site
+# react-signup-verification-boilerplate
 
-MudFam Site
+React - Email Sign Up with Verification, Authentication & Forgot Password
 
-Thank you for coming to our site
+For documentation and a live demo see https://jasonwatmore.com/post/2020/04/22/react-email-sign-up-with-verification-authentication-forgot-password

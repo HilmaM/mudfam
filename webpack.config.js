@@ -2,10 +2,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-    mode: 'production',
-    resolve: {
-        extensions: ['.js', '.jsx']
-    },
+    mode: 'development',
     module: {
         rules: [
             {
@@ -23,6 +20,7 @@ module.exports = {
         ]
     },
     resolve: {
+        mainFiles: ['index', 'Index'],
         extensions: ['.js', '.jsx'],
         alias: {
             '@': path.resolve(__dirname, 'src/'),
