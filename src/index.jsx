@@ -6,7 +6,7 @@ import { accountService } from './_services';
 import './styles.less';
 
 import { Router } from 'react-router-dom';
-import { App } from './App/App';
+import { App } from './App';
 
 // attempt silent token refresh before startup
 accountService.refreshToken().finally(startApp);
