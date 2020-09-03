@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 
-import { accountService } from '@/_services';
+import { accountService } from '../_services';
 
 function Details({ match }) {
   const { path } = match;

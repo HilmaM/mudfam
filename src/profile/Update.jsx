@@ -4,7 +4,7 @@ import { Formik, useField, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Col, InputGroup, Button, FormGroup, FormLabel } from 'react-bootstrap';
 
-import { accountService, alertService } from '@/_services';
+import { accountService, alertService } from '../_services';
 
 const MyTextField = ({label, ...props}) => {
   const [field, meta] = useField(props);

@@ -2,11 +2,11 @@ import React from 'react';
 import { render } from 'react-dom';
 import { history } from './_helpers';
 import { accountService } from './_services';
-import { App } from './App/App';
 
 import './styles.less';
 
 import { Router } from 'react-router-dom';
+import { App } from './App/App';
 
 // attempt silent token refresh before startup
 accountService.refreshToken().finally(startApp);

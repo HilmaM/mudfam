@@ -1,5 +1,5 @@
 import config from 'config';
-import { fetchWrapper } from '@/_helpers';
+import { fetchWrapper } from '../_helpers';
 
 const baseUrl = `${config.apiUrl}/subscribers`;
 
