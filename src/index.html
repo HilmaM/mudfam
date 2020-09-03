@@ -3,14 +3,29 @@
   <head>
     <meta charset="UTF-8">
     <base href="/" />
-    <title>Mudfam-Org</title>
-
-    <!-- bootstrap css -->
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="src/fonts/blog.css" />
+    <link rel="stylesheet" href="src/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../node_modules/froala-editor/css/froala_editor.pkgd.min.css">
+    <link rel="stylesheet" href="../node_modules/froala-editor/css/froala_style.min.css">
 
+    <title>MudFam-Org</title>
+    <style>
+      a { cursor: pointer; }
+      .help-block { font-size: 12px; }
+    </style>
+    <script>
+      addEventListener("load", function () {
+        setTimeout(hideURLbar, 0);
+      }, false);
+
+      function hideURLbar() {
+        window.scrollTo(0, 1);
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <script src="../node_modules/froala-editor/js/froala_editor.pkgd.min.js"></script>
   </body>
 </html>

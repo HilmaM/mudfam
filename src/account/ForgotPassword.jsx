@@ -17,29 +17,27 @@ const MyTextField = ({label, ...props}) => {
   </>);
 };
 
+
 function ForgotPassword() {
-  const initialValues = {
-    email: ''
-  };
-
-  const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email('Email is invalid')
-      .required('Email is required')
-  });
-
-  function onSubmit({ email }, { setSubmitting }) {
-    alertService.clear();
-    accountService.forgotPassword(email)
-      .then(() => alertService.success('Please check your email for password reset instructions'))
-      .catch(error => alertService.error(error))
-      .finally(() => setSubmitting(false));
-  }
-
-  return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ isSubmitting }) => (
-          <Form>
+  return (<Formik
+      initialValues={{
+        email: ''
+      }}
+      validationSchema={Yup.object({
+        email: Yup.string()
+          .email('Invalid Email')
+          .required('Email field should be filled!')
+      })}
+      onSubmit={(fields, {setSubmitting}) => {
+        alertService.clear();
+        accountService.forgotPassword(fields)
+          .then(() => alertService.success('Please check your email for Password reset instructions'))
+          .catch(error => alertService.error(error))
+          .finally(() => setSubmitting(false));
+      }}
+    >
+      {({ isSubmitting }) => {
+        return (<Form>
           <h3 className="card-header" >Forgot Password</h3>
           <div className="card-body" >
             <FormGroup>
@@ -61,10 +59,9 @@ function ForgotPassword() {
               </FormGroup>
             </Row>
           </div>
-        </Form>
-      )}
-    </Formik>        
-  )
+        </Form>)
+      }}
+    </Formik>);
 }
 
 export { ForgotPassword }; 

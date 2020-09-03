@@ -1,164 +1,268 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Formik, useField, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { accountService, alertService } from '@/_services';
+import { Col, InputGroup, Button, FormGroup, FormLabel, Row, Container } from 'react-bootstrap';
+import { accountService, alertService } from '../../_services';
+
+
+const MyTextField = ({label, ...props}) => {
+  const [field, meta] = useField(props);
+  return (<>
+    <label htmlFor={props.id || props.name}>{label}</label>
+    <input className="text-input form-control" {...field} {...props} />
+    {meta.touched && meta.error ? (
+      <div className="error" >{meta.error}</div>
+    ) : null}
+  </>);
+};
 
 function AddEdit({ history, match }) {
-    const { id } = match.params;
-    const isAddMode = !id;
-    
-    const initialValues = {
-        title: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        role: '',
-        password: '',
-        confirmPassword: ''
-    };
+  const { id } = match.params;
+  const isAddMode = !id;
 
-    const validationSchema = Yup.object().shape({
-        title: Yup.string()
-            .required('Title is required'),
-        firstName: Yup.string()
-            .required('First Name is required'),
-        lastName: Yup.string()
-            .required('Last Name is required'),
-        email: Yup.string()
-            .email('Email is invalid')
-            .required('Email is required'),
-        role: Yup.string()
-            .required('Role is required'),
-        password: Yup.string()
-            .concat(isAddMode ? Yup.string().required('Password is required') : null)
-            .min(6, 'Password must be at least 6 characters'),
-        confirmPassword: Yup.string()
-            .when('password', (password, schema) => {
-                if (password) return schema.required('Confirm Password is required');
-            })
-            .oneOf([Yup.ref('password')], 'Passwords must match')
-    });
+  return (
+    <Formik  
+    initialValues={{
+      title: '',
+      first_name: '',
+      last_name: '',
+      gender: '',
+      home_address: '',
+      country: '',
+      phone_number: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      bio: ''
+    }} 
+    validationSchema={Yup.object({
+      title: Yup.string()
+        .required('Title is required'),
+      first_name: Yup.string()
+        .required('First Name is required'),
+      last_name: Yup.string()
+        .required('Last Name is required'),
+      gender: Yup.string()
+        .required('Gender is required'),
+      home_address: Yup.string()
+        .required('Home Address is required'),
+      country: Yup.string()
+        .required('Please prodive a country'),
+      phone_number: Yup.string()
+        .min(13, '13 Characters Minimum')
+        .required('Must be a number'),
+      email: Yup.string()
+        .email('Email is invalid')
+        .required('Email is required'),
+      password: Yup.string()
+        .concat(isAddMode ? Yup.string().required('Password is required') : null)
+        .min(8, 'Password must be at least 8 characters'),
+      confirmPassword: Yup.string()
+        .when('password', (password, schema) => {
+          if (password || isAddMode) return schema.required('Confirm Password is required');
+        })
+        .oneOf([Yup.ref('password')], 'Passwords must match'),
+      bio: Yup.string()
+        .max(128, 'Maximum of 128 Characters allowed')
 
-    function onSubmit(fields, { setStatus, setSubmitting }) {
-        setStatus();
-        if (isAddMode) {
-            createUser(fields, setSubmitting);
-        } else {
-            updateUser(id, fields, setSubmitting);
-        }
-    }
-
-    function createUser(fields, setSubmitting) {
+    })} 
+    onSubmit={(fields, {setStatus, setSubmitting}) => {
+      setStatus();
+      if (isAddMode) {
         accountService.create(fields)
-            .then(() => {
-                alertService.success('User added successfully', { keepAfterRouteChange: true });
-                history.push('.');
-            })
-            .catch(error => {
-                setSubmitting(false);
-                alertService.error(error);
-            });
-    }
-
-    function updateUser(id, fields, setSubmitting) {
+          .then(() => {
+            alertService.success('User added successfully', { keepAfterRouteChange: true });
+            history.push('.');
+          })
+          .catch(error => {
+            setSubmitting(false);
+            alertService.error(error);
+          });
+      } else {
         accountService.update(id, fields)
-            .then(() => {
-                alertService.success('Update successful', { keepAfterRouteChange: true });
-                history.push('..');
-            })
-            .catch(error => {
-                setSubmitting(false);
-                alertService.error(error);
-            });
-    }
+          .then(() => {
+            alertService.success('Update successful', { keepAfterRouteChange: true });
+            history.push('..');
+          })
+          .catch(error => {
+            setSubmitting(false);
+            alertService.error(error);
+          });
+      }
+    }} 
+    >
+      {
+        ({ errors, touched, isSubmitting, setFieldValue }) => {
 
-    return (
-        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-            {({ errors, touched, isSubmitting, setFieldValue }) => {
-                useEffect(() => {
-                    if (!isAddMode) {
-                        // get user and set form fields
-                        accountService.getById(id).then(user => {
-                            const fields = ['title', 'firstName', 'lastName', 'email', 'role'];
-                            fields.forEach(field => setFieldValue(field, user[field], false));
-                        });
-                    }
-                }, []);
-
-                return (
-                    <Form>
-                        <h1>{isAddMode ? 'Add User' : 'Edit User'}</h1>
-                        <div className="form-row">
-                            <div className="form-group col">
-                                <label>Title</label>
-                                <Field name="title" as="select" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')}>
-                                    <option value=""></option>
-                                    <option value="Mr">Mr</option>
-                                    <option value="Mrs">Mrs</option>
-                                    <option value="Miss">Miss</option>
-                                    <option value="Ms">Ms</option>
-                                </Field>
-                                <ErrorMessage name="title" component="div" className="invalid-feedback" />
-                            </div>
-                            <div className="form-group col-5">
-                                <label>First Name</label>
-                                <Field name="firstName" type="text" className={'form-control' + (errors.firstName && touched.firstName ? ' is-invalid' : '')} />
-                                <ErrorMessage name="firstName" component="div" className="invalid-feedback" />
-                            </div>
-                            <div className="form-group col-5">
-                                <label>Last Name</label>
-                                <Field name="lastName" type="text" className={'form-control' + (errors.lastName && touched.lastName ? ' is-invalid' : '')} />
-                                <ErrorMessage name="lastName" component="div" className="invalid-feedback" />
-                            </div>
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group col-7">
-                                <label>Email</label>
-                                <Field name="email" type="text" className={'form-control' + (errors.email && touched.email ? ' is-invalid' : '')} />
-                                <ErrorMessage name="email" component="div" className="invalid-feedback" />
-                            </div>
-                            <div className="form-group col">
-                                <label>Role</label>
-                                <Field name="role" as="select" className={'form-control' + (errors.role && touched.role ? ' is-invalid' : '')}>
-                                    <option value=""></option>
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
-                                </Field>
-                                <ErrorMessage name="role" component="div" className="invalid-feedback" />
-                            </div>
-                        </div>
-                        {!isAddMode &&
-                            <div>
-                                <h3 className="pt-3">Change Password</h3>
-                                <p>Leave blank to keep the same password</p>
-                            </div>
-                        }
-                        <div className="form-row">
-                            <div className="form-group col">
-                                <label>Password</label>
-                                <Field name="password" type="password" className={'form-control' + (errors.password && touched.password ? ' is-invalid' : '')} />
-                                <ErrorMessage name="password" component="div" className="invalid-feedback" />
-                            </div>
-                            <div className="form-group col">
-                                <label>Confirm Password</label>
-                                <Field name="confirmPassword" type="password" className={'form-control' + (errors.confirmPassword && touched.confirmPassword ? ' is-invalid' : '')} />
-                                <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-                                {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
-                                Save
-                            </button>
-                            <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
-                        </div>
-                    </Form>
-                );
-            }}
-        </Formik>
-    );
+          useEffect(() => {
+            if (!isAddMode) {
+              // get user and set form fields
+              accountService.getById(id).then(user => {
+                const fields = ['title', 'first_name', 'last_name', 'gender', 'home_address', 'country', 'phone_number', 'email', 'role', 'bio'];
+                fields.forEach(field => setFieldValue(field, user[field], false));
+              });
+            }
+          }, []);
+          return (
+            <Container fluid className="p-4" >
+              <Row fluid className="jumbotron" >
+                <Col fluid md={{ span:10, offset:1 }} >
+                  <Form>
+                    <h1 className="text-center bg-success" >{isAddMode ? 'Create an account' : 'Editing...' }</h1>
+                    <Row>
+                      <FormGroup as={Col} md="2" >
+                        <FormLabel>Title</FormLabel>
+                        <Field  name="title" as="select" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')}>
+                          <option value="" disabled={true} >Select...</option>
+                          <option value="dr" >Dr</option>
+                          <option value="miss" >Miss</option>
+                          <option value="mr" >Mr</option>
+                          <option value="mrs" >Mrs</option>
+                          <option value="ms" >Ms</option>
+                          <option value="prof" >Prof</option>
+                        </Field>
+                        <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                      </FormGroup>
+                      <FormGroup as={Col} md="5" >
+                        <MyTextField
+                          type="text"
+                          name="first_name"
+                          label="First Name"
+                        />
+                      </FormGroup>
+                      <FormGroup as={Col} md="5"  >
+                        <MyTextField 
+                          type="text"
+                          name="last_name"
+                          label="Surname"
+                        />
+                      </FormGroup>
+                    </Row>
+                    <Row>
+                      <FormGroup as={Col} md="3" >
+                        <FormLabel>Gender</FormLabel>
+                          <Field
+                            as="select"
+                            name="gender"
+                            className={'form-control' + (errors.gender && touched.gender ? ' is-invalid' : '')}
+                          >
+                            <option value="" disabled={true} >Choose...</option>
+                            <option value="female" >Female</option>
+                            <option value="male" >Male</option>
+                          </Field>
+                          <ErrorMessage name="gender" component="div" className="invalid-feedback" />
+                      </FormGroup>
+                    </Row>
+                    <Row>
+                      <FormGroup as={Col} md="12" >
+                        <MyTextField 
+                          label="Home Address"
+                          name="home_address"
+                          type="text"
+                        />
+                      </FormGroup>
+                    </Row>
+                    <Row>
+                      <FormGroup as={Col} md="3" >
+                        <FormLabel>Country</FormLabel>
+                          <Field
+                            as="select"
+                            name="country"
+                            className={'form-control' + (errors.country && touched.country ? ' is-invalid' : '')}
+                          >
+                            <option value="" disabled={true} >Choose...</option>
+                            <option value="zimbabwe" >Zimbabwe</option>
+                            <option value="africa" >Africa</option>
+                            <option value="asia" >Asia</option>
+                            <option value="america" >America</option>
+                            <option value="europe" >Europe</option>
+                            <option value="australia" >Australia</option>
+                          </Field>
+                          <ErrorMessage name="country" component="div" className="invalid-feedback" />
+                      </FormGroup>
+                      <FormGroup as={Col} md="4" >
+                        <MyTextField 
+                          label="Phone Number"
+                          name="phone_number"
+                          type="number"
+                        />
+                      </FormGroup>
+                    </Row>
+                    <Row>
+                      <FormGroup as={Col} md="6" >
+                        <MyTextField 
+                          label="Email"
+                          name="email"
+                          type="email"
+                        />
+                      </FormGroup>
+                      <FormGroup as={Col} md={3} >
+                        <FormLabel>Role</FormLabel>
+                        <Field 
+                          as="select" 
+                          name="role" 
+                          className={'form-control' + (errors.role && touched.role ? ' is-invalid' : '')}
+                        >
+                          <option value="" >Choose Role</option>
+                          <option value="User">User</option>
+                          <option value="Editor">Editor</option>
+                          <option value="Manager">Manager</option>
+                          <option value="Admin">Admin</option>
+                        </Field>
+                      </FormGroup>
+                    </Row>
+                      {!isAddMode &&
+                        <FormGroup >
+                          <h3 className="pt-3">Change Password</h3>
+                          <p>Leave blank to keep the same password</p>
+                        </FormGroup>
+                      }
+                    <Row>
+                      <FormGroup as={Col} md="4" >
+                        <MyTextField 
+                          label="Password"
+                          type="password"
+                          name="password"
+                        />
+                      </FormGroup>
+                      <FormGroup as={Col} md="4" >
+                        <MyTextField 
+                          label="Confirm Password"
+                          name="confirmPassword"
+                          type="password"
+                        />
+                      </FormGroup>
+                    </Row>
+                    <FormGroup>
+                      <label htmlFor="bio" >BioG</label>
+                      <Field 
+                        as="textarea"
+                        name="bio"
+                        className={"form-input form-control" + (errors.bio && touched.bio ? ' is-invalid' : '')}
+                      />
+                      <ErrorMessage name="bio" component="div" className="invalid-feedback" />
+                    </FormGroup>
+                    <Row>
+                      <FormGroup as={Col} >
+                        <Button className="btn btn-primary" type="submit" disabled={isSubmitting}  >
+                          {isSubmitting && 
+                            <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                          }
+                          Save
+                        </Button>
+                        <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
+                      </FormGroup>
+                    </Row>
+                  </Form>
+                </Col>
+              </Row>
+            </Container>
+          );
+      }}
+    </Formik>
+  );
 }
 
 export { AddEdit };

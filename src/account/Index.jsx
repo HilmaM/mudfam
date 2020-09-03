@@ -3,8 +3,8 @@ import { Route, Switch } from 'react-router-dom';
 
 import { accountService } from '@/_services';
 
-import { Login } from './Login';
-import { RegisterPage } from './justD';
+import { LoginPage } from './LoginPage';
+import { RegisterPage } from './RegisterPage';
 import { VerifyEmail } from './VerifyEmail';
 import { ForgotPassword } from './ForgotPassword';
 import { ResetPassword } from './ResetPassword';
@@ -25,7 +25,7 @@ function Account({ history, match }) {
         <div className="col-sm-8 offset-sm-2 mt-5">
           <div className="card m-3">
             <Switch>
-              <Route path={`${path}/login`} component={Login} />
+              <Route path={`${path}/login`} component={LoginPage} />
               <Route path={`${path}/register`} component={RegisterPage} />
               <Route path={`${path}/verify-email`} component={VerifyEmail} />
               <Route path={`${path}/forgot-password`} component={ForgotPassword} />
