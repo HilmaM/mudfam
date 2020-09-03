@@ -3,14 +3,14 @@ import { Route, Switch, Redirect, Link, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import { Navbar, Container } from 'react-bootstrap';
 
-import { Role } from '@/_helpers';
-import { accountService } from '@/_services';
-import { PrivateRoute } from '@/_components';
-import { Home } from '@/HomePage';
-import { Admin } from '@/admin';
-import { Account } from '@/account';
-import { PoetryPageRouter } from '@/PoetryPage';
-import { Alert, NavigationBar } from '@/navBar';
+import { Role } from '../_helpers';
+import { accountService } from '../_services';
+import { PrivateRoute } from '../_components';
+import { Home } from '../HomePage';
+import { Admin } from '../admin';
+import { Account } from '../account';
+import { PoetryPageRouter } from '../PoetryPage';
+import { Alert, NavigationBar } from '../navBar';
 import { AdminNav } from '../navBar/AdminNavbar';
 import { Profile } from '../profile/Index';
 

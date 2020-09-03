@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Link } from "react-router-dom";
 
-import { CATEGORY } from '@/constants';
+import { CATEGORY } from '../constants';
 
 function PoetryCorner () {
   

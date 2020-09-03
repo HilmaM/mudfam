@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { FormGroup, Col, InputGroup, FormLabel, Button, Row } from 'react-bootstrap';
 
-import { accountService, alertService } from '@/_services';
+import { accountService, alertService } from '../_services';
 
 function LoginPage ({ history }) {
   const initialValues = {

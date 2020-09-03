@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import { Formik, useField, Form } from 'formik';
 import * as Yup from 'yup';
 
-import { accountService, alertService } from '@/_services';
+import { accountService, alertService } from '../_services';
 import { InputGroup, Button, Row, Col } from 'react-bootstrap';
 
 const MyTextField = ({label, ...props}) => {

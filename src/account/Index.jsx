@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import { accountService } from '@/_services';
+import { accountService } from '../_services';
 
 import { LoginPage } from './LoginPage';
 import { RegisterPage } from './RegisterPage';

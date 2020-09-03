@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { Container, Row, Col } from 'react-bootstrap';
 
-import { SideBar } from '@/PoetryPage';
-import { poemService } from '@/_services';
+import { SideBar } from '../PoetryPage';
+import { poemService } from '../_services';
 
 function PoemPost ({id}) {
   
